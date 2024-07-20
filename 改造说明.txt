@@ -1,0 +1,22 @@
+本次改造解决的目的：
+1. ComfyUI内置ComfyUI-Manager
+2. ComfyUI-Manager安装的插件代码存放于容器外部，避免因容器删除而丢失
+
+改造方案
+
+1. 沿用原有模型共享方案
+  1）数据存于data目录，data/models用于存放SD模型,data/embeddings用于存放embedding模型,data/config用于存放各UI项目配置文件
+  2）输出存于output目录
+2. 项目代码存于宿主机，挂载到容器解决ComfyUI-Manager插件代码存于容器内部问题
+  1）data/src用于存放各UI项目代码，例如data/config/comfy用于存放comfyui项目代码，data/config/webui用于存放webui项目代码
+3. 在ComfyUI容器启动时自动下载源码并自动安装ComfyUI-Manager （参考：https://github.com/YanWenKun/ComfyUI-Docker）
+
+--------
+
+上面改造暂不实施，先用以下代码解决ComfyUI-Manager安装失败问题：
+```
+# 内置ComfyUI-Manager
+RUN pip install onnxruntime
+RUN git clone https://github.com/ltdrdata/ComfyUI-Manager ${ROOT}/custom_nodes/ComfyUI-Manager && \
+  pip install -r ${ROOT}/custom_nodes/ComfyUI-Manager/requirements.txt
+```
